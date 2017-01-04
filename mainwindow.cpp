@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "dbmanager.h"
 #include <iostream>
 #include <string>
 #include <QDebug>
@@ -18,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    db = new DbManager("lifts.db");
     ui->setupUi(this);
     populateComboBox();
 }
@@ -47,6 +49,7 @@ void MainWindow::printInput()
 void MainWindow::on_saveBtn_clicked()
 {
      ui->statusBar->showMessage("Saving lift...",1000);
+     db->addEntry("Christian");
      printInput();
      clearInput();
      populateComboBox();

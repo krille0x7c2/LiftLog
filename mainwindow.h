@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "dbmanager.h"
 #include <QMainWindow>
 #include <QLineEdit>
 #include <QKeyEvent>
@@ -26,6 +27,8 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+
+    DbManager *db;
 
     void populateComboBox();
 
