@@ -18,12 +18,15 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    void test();
 
 private slots:
 
     void on_comboBox_activated(int index);
 
     void on_saveBtn_clicked();
+
+    void on_changeSettingsBtn_clicked();
 
 private:
     Ui::MainWindow *ui;

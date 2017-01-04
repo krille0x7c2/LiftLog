@@ -80,3 +80,8 @@ void MainWindow::on_comboBox_activated(int index)
 
 
 
+
+void MainWindow::on_changeSettingsBtn_clicked()
+{
+
+}
