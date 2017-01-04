@@ -33,6 +33,8 @@ private:
 
     void clearInput();
 
+    void printInput();
+
 protected:
     virtual void keyPressEvent(QKeyEvent *event);
 };

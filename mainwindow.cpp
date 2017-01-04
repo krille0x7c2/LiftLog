@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include <iostream>
 #include <string>
+#include <QDebug>
 
 void MainWindow::populateComboBox()
 {
@@ -34,14 +35,19 @@ void MainWindow::clearInput()
     ui->comboBox->clear();
 }
 
+void MainWindow::printInput()
+{
+    qDebug() << ui->calendarWidget->selectedDate().toString("ddMMyyyy");
+    qDebug() << ui->comboBox->currentText();
+    qDebug() << ui->lineEditWeight->text();
+    qDebug() << ui->lineEditReps->text();
+    qDebug() << ui->lineEditSets->text();
+}
+
 void MainWindow::on_saveBtn_clicked()
 {
      ui->statusBar->showMessage("Saving lift...",1000);
-     std::cout << ui->calendarWidget->selectedDate().toString("ddMMyyyy").toStdString() << std::endl;
-     std::cout << ui->comboBox->currentText().toStdString() << std::endl;
-     std::cout << ui->lineEditWeight->text().toStdString() << std::endl;
-     std::cout << ui->lineEditReps->text().toStdString() << std::endl;
-     std::cout << ui->lineEditSets->text().toStdString() << std::endl;
+     printInput();
      clearInput();
      populateComboBox();
      toogleInput(false);
@@ -64,7 +70,7 @@ void MainWindow::toogleInput(bool b)
 
 void MainWindow::on_comboBox_activated(int index)
 {
-    std::cout << index << std::endl;
+    qDebug() << index;
     if (index != 0)
        toogleInput(true);
 }
