@@ -45,6 +45,8 @@ private:
 
     void populateListWidget();
 
+    void addChart();
+    
 protected:
     virtual void keyPressEvent(QKeyEvent *event);
 };
