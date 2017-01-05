@@ -106,6 +106,7 @@ void MainWindow::on_changeSettingsBtn_clicked()
 
 void MainWindow::on_listWidgetMeasure_doubleClicked(const QModelIndex &index)
 {
+    //Key test
     bool ok;
     int i = QInputDialog::getInt(this, tr("QInputDialog::getInteger()"),
                                      tr("Value:"), 25, 0, 500, 1, &ok);
