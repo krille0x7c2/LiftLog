@@ -28,6 +28,8 @@ private slots:
 
     void on_changeSettingsBtn_clicked();
 
+    void on_listWidgetMeasure_doubleClicked(const QModelIndex &index);
+
 private:
     Ui::MainWindow *ui;
 
@@ -40,6 +42,8 @@ private:
     void clearInput();
 
     void printInput();
+
+    void populateListWidget();
 
 protected:
     virtual void keyPressEvent(QKeyEvent *event);

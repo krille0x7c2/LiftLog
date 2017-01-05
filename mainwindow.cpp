@@ -4,6 +4,8 @@
 #include <iostream>
 #include <string>
 #include <QDebug>
+#include <QInputDialog>
+#include <QDir>
 
 void MainWindow::populateComboBox()
 {
@@ -15,6 +17,19 @@ void MainWindow::populateComboBox()
     ui->comboBox->addItem("Row");
 }
 
+void MainWindow::populateListWidget()
+{
+    ui->listWidgetMeasure->addItem("Bicep L");
+    ui->listWidgetMeasure->addItem("Bicep R");
+    ui->listWidgetMeasure->addItem("Body Fat");
+    ui->listWidgetMeasure->addItem("Hips");
+    ui->listWidgetMeasure->addItem("Lean Mass");
+    ui->listWidgetMeasure->addItem("Thigh L");
+    ui->listWidgetMeasure->addItem("Thigh R");
+    ui->listWidgetMeasure->addItem("Weight");
+    ui->listWidgetMeasure->addItem("Waist");
+}
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -22,7 +37,10 @@ MainWindow::MainWindow(QWidget *parent) :
     db = new DbManager("lifts.db");
     ui->setupUi(this);
     populateComboBox();
+    populateListWidget();
+
 }
+
 
 MainWindow::~MainWindow()
 {
@@ -84,4 +102,13 @@ void MainWindow::on_comboBox_activated(int index)
 void MainWindow::on_changeSettingsBtn_clicked()
 {
 
+}
+
+void MainWindow::on_listWidgetMeasure_doubleClicked(const QModelIndex &index)
+{
+    bool ok;
+    int i = QInputDialog::getInt(this, tr("QInputDialog::getInteger()"),
+                                     tr("Value:"), 25, 0, 500, 1, &ok);
+    if (ok)
+        qDebug() << index.row() << i;
 }
