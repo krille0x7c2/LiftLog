@@ -58,12 +58,30 @@ void MainWindow::populateCalculateLst()
     ui->cal_menu_lst->addItem("TDDE");
 }
 
+void MainWindow::populateBmrGender()
+{
+    ui->bmr_gender->addItem("Man");
+    ui->bmr_gender->addItem("Woman");
+}
+
+void MainWindow::populateBmrActivity()
+{
+    ui->bmr_activity->addItem("Little or no exercise");
+    ui->bmr_activity->addItem("Light exercise/sports 1-3 days/week");
+    ui->bmr_activity->addItem("Moderate exercise/sports 3-5 days/week");
+    ui->bmr_activity->addItem("Hard exercise/sports 6-7 days a week");
+    ui->bmr_activity->addItem("Very hard exercise/sports & physical job or 2x training");
+}
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     db = new DbManager("lifts.db");
     ui->setupUi(this);
+
+    populateBmrActivity();
+    populateBmrGender();
     populateCalculateLst();
     addChart();
     populateComboBox();
@@ -181,9 +199,54 @@ float MainWindow::bmi_calculate(float cm_len, float kg_am)
     return (kg_am / (cm_len * cm_len));
 }
 
+float MainWindow::bmr_calculate(float cm_len, float kg_am, int age, int gender)
+{
+    return (gender == 0 ? (66 + (13.7 * kg_am) + (5 * cm_len) - (6.8 * age) ) :
+                          (655 + (9.6 * kg_am) + (1.8 * cm_len) - (4.7 * age) ));
+
+}
+
+void MainWindow::setActivityLevel(float &cal_need, float bmr_res)
+{
+    switch(ui->bmr_activity->currentIndex()){
+    case 0: cal_need = bmr_res * 1.2; break;
+    case 1: cal_need = bmr_res * 1.375; break;
+    case 2: cal_need = bmr_res * 1.55; break;
+    case 3: cal_need = bmr_res * 1.725; break;
+    case 4: cal_need = bmr_res * 1.9; break;
+    default:
+        break;
+    }
+}
+
 void MainWindow::on_bmrBtn_clicked()
 {
+    float bmr_cm = 0, bmr_kg = 0, bmr_age = 0, bmr_res = 0, cal_need = 0;
+    QString str_res, cal_res;
 
+    if (ui->bmr_cm_in->text().isEmpty() && ui->bmr_kg_in->text().isEmpty())
+        ui->statusBar->showMessage(error_codes[ENTER_KG_CM]);
+    else if (ui->bmr_cm_in->text().isEmpty())
+        ui->statusBar->showMessage(error_codes[ENTER_CM]);
+    else if (ui->bmr_kg_in->text().isEmpty())
+        ui->statusBar->showMessage(error_codes[ENTER_KG]);
+    else{
+        ui->statusBar->clearMessage();
+        bmr_cm = ui->bmr_cm_in->text().toFloat();
+        bmr_kg = ui->bmr_kg_in->text().toFloat();
+        bmr_age = !ui->bmr_age_in->text().isEmpty() ? ui->bmr_age_in->text().toFloat() : 30;
+
+        bmr_res = ui->bmr_gender->currentIndex() == 1 ?
+                    bmr_calculate(bmr_cm, bmr_kg,bmr_age,1) :
+                    bmr_calculate(bmr_cm, bmr_kg,bmr_age);
+
+        setActivityLevel(cal_need, bmr_res);
+
+        qDebug() << bmr_cm << bmr_kg << bmr_age << bmr_res << cal_need;
+        str_res = QString::number(bmr_res);
+        cal_res = QString::number(cal_need);
+        ui->bmr_res_out->setText("Your BMR is: " + str_res + "\nCalorie need: " + cal_res);
+    }
 }
 
 void MainWindow::on_cal_menu_lst_clicked(const QModelIndex &index)

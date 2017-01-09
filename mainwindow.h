@@ -20,8 +20,6 @@ public:
     ~MainWindow();
     void test();
 
-    void populateCalculateLst();
-
 private slots:
 
     void on_comboBox_activated(int index);
@@ -47,14 +45,22 @@ private:
         ENTER_KG = 2,
     };
 
+    enum GENDER {
+        MAN = 0,
+        WOMAN = 1,
+    };
+
     QString error_codes[10] = {
-        "ERROR: Missing lenght and weight",
-        "ERROR: Missing lenght",
-        "ERROR: Missign weight"};
+        "BMI ERROR: Missing lenght and weight",
+        "BMI ERROR: Missing lenght",
+        "BMI ERROR: Missign weight"
+    };
 
     DbManager *db;
 
     float bmi_calculate(float cm_len, float kg_am);
+
+    float bmr_calculate(float cm_len, float kg_am, int age, int gender = 0);
 
     void populateComboBox();
 
@@ -67,7 +73,15 @@ private:
     void populateListWidget();
 
     void addChart();
+
+    void populateCalculateLst();
     
+    void populateBmrGender();
+
+    void populateBmrActivity();
+
+    void setActivityLevel(float &cal_need, float bmr_res);
+
 protected:
     virtual void keyPressEvent(QKeyEvent *event);
 };
