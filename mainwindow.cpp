@@ -53,9 +53,8 @@ void MainWindow::addChart()
 
 void MainWindow::populateCalculateLst()
 {
-    ui->cal_menu_lst->addItem("BMR");
+    ui->cal_menu_lst->addItem("BMR/TDEE");
     ui->cal_menu_lst->addItem("BMI");
-    ui->cal_menu_lst->addItem("TDDE");
 }
 
 void MainWindow::populateBmrGender()
