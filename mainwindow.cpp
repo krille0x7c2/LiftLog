@@ -140,9 +140,6 @@ void MainWindow::on_comboBox_activated(int index)
        toogleInput(true);
 }
 
-
-
-
 void MainWindow::on_changeSettingsBtn_clicked()
 {
 
