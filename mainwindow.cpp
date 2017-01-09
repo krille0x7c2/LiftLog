@@ -51,12 +51,20 @@ void MainWindow::addChart()
     ui->tab_stat->setLayout(hbox);
 }
 
+void MainWindow::populateCalculateLst()
+{
+    ui->cal_menu_lst->addItem("BMR");
+    ui->cal_menu_lst->addItem("BMI");
+    ui->cal_menu_lst->addItem("TDDE");
+}
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     db = new DbManager("lifts.db");
     ui->setupUi(this);
+    populateCalculateLst();
     addChart();
     populateComboBox();
     populateListWidget();
@@ -98,8 +106,23 @@ void MainWindow::on_saveBtn_clicked()
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
-    if (event->key() == Qt::Key_Return)
-        emit on_saveBtn_clicked();
+    //Check active tab
+    switch(ui->tabWidget->currentIndex()){
+    case 0:
+        if (event->key() == Qt::Key_Return)
+            emit on_saveBtn_clicked();
+        break;
+    case 1:
+        //Free slot
+        break;
+    case 2:
+        //Free slot
+        break;
+    case 3:
+        //Free slot
+    default:
+        break;
+    }
 }
 
 void MainWindow::toogleInput(bool b)
@@ -132,4 +155,42 @@ void MainWindow::on_listWidgetMeasure_doubleClicked(const QModelIndex &index)
                                      tr("Value:"), 25, 0, 500, 1, &ok);
     if (ok)
         qDebug() << index.row() << i;
+}
+
+void MainWindow::on_bmiBtn_clicked()
+{
+    float bmi_m, bmi_cm, bmi_kg, bmi_res;
+    QString str_res;
+
+    if (ui->bmi_cm_in->text().isEmpty() && ui->bmi_kg_in->text().isEmpty())
+        ui->statusBar->showMessage(error_codes[ENTER_KG_CM]);
+    else if (ui->bmi_cm_in->text().isEmpty())
+        ui->statusBar->showMessage(error_codes[ENTER_CM]);
+    else if (ui->bmi_kg_in->text().isEmpty())
+        ui->statusBar->showMessage(error_codes[ENTER_KG]);
+    else{
+        ui->statusBar->clearMessage();
+        bmi_cm = ui->bmi_cm_in->text().toFloat();
+        bmi_kg = ui->bmi_kg_in->text().toFloat();
+        bmi_m = bmi_cm / 100;
+        bmi_res = bmi_calculate(bmi_m, bmi_kg);
+        str_res = QString::number(bmi_res);
+        ui->bmi_res_out->setText("Your BMI is: " + str_res);
+    }
+}
+
+float MainWindow::bmi_calculate(float cm_len, float kg_am)
+{
+    return (kg_am / (cm_len * cm_len));
+}
+
+void MainWindow::on_bmrBtn_clicked()
+{
+
+}
+
+void MainWindow::on_cal_menu_lst_clicked(const QModelIndex &index)
+{
+    qDebug() << index.row();
+    ui->stackedWidget->setCurrentIndex(index.row());
 }

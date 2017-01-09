@@ -20,6 +20,8 @@ public:
     ~MainWindow();
     void test();
 
+    void populateCalculateLst();
+
 private slots:
 
     void on_comboBox_activated(int index);
@@ -30,10 +32,29 @@ private slots:
 
     void on_listWidgetMeasure_doubleClicked(const QModelIndex &index);
 
+    void on_bmiBtn_clicked();
+
+    void on_bmrBtn_clicked();
+
+    void on_cal_menu_lst_clicked(const QModelIndex &index);
+
 private:
     Ui::MainWindow *ui;
 
+    enum FAILCODES {
+        ENTER_KG_CM = 0,
+        ENTER_CM = 1,
+        ENTER_KG = 2,
+    };
+
+    QString error_codes[10] = {
+        "ERROR: Missing lenght and weight",
+        "ERROR: Missing lenght",
+        "ERROR: Missign weight"};
+
     DbManager *db;
+
+    float bmi_calculate(float cm_len, float kg_am);
 
     void populateComboBox();
 
