@@ -254,8 +254,6 @@ void MainWindow::on_bmrBtn_clicked()
                     fit.bmrCalc(bmr_cm, bmr_kg,bmr_age);
 
         setActivityLevel(cal_need, bmr_res);
-
-        qDebug() << bmr_cm << bmr_kg << bmr_age << bmr_res << cal_need;
         str_res = QString::number(bmr_res);
         cal_res = QString::number(cal_need);
         ui->bmr_res_out->setText("Your BMR is: " + str_res + "\nCalorie need: " + cal_res);
