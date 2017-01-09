@@ -171,37 +171,62 @@ void MainWindow::on_listWidgetMeasure_doubleClicked(const QModelIndex &index)
         qDebug() << index.row() << i;
 }
 
+bool MainWindow::isComplete(int calculator)
+{
+    switch(calculator){
+    case 0:
+        if (ui->bmr_cm_in->text().isEmpty() && ui->bmr_kg_in->text().isEmpty()) {
+            ui->statusBar->showMessage(error_codes[ENTER_KG_CM]);
+            return false;
+        }
+        else if (ui->bmr_cm_in->text().isEmpty()) {
+            ui->statusBar->showMessage(error_codes[ENTER_CM]);
+            return false;
+        }
+        else if (ui->bmr_kg_in->text().isEmpty()) {
+            ui->statusBar->showMessage(error_codes[ENTER_KG]);
+            return false;
+        }
+        else {
+            return true;
+        }
+        break;
+    case 1:
+        if (ui->bmi_cm_in->text().isEmpty() && ui->bmi_kg_in->text().isEmpty()) {
+            ui->statusBar->showMessage(error_codes[ENTER_KG_CM]);
+            return false;
+        }
+        else if (ui->bmi_cm_in->text().isEmpty()) {
+            ui->statusBar->showMessage(error_codes[ENTER_CM]);
+            return false;
+        }
+        else if (ui->bmi_kg_in->text().isEmpty()) {
+            ui->statusBar->showMessage(error_codes[ENTER_KG]);
+            return false;
+        }
+        else {
+            return true;
+        }
+        break;
+    default:
+        return false;
+    }
+}
+
 void MainWindow::on_bmiBtn_clicked()
 {
     float bmi_m, bmi_cm, bmi_kg, bmi_res;
     QString str_res;
 
-    if (ui->bmi_cm_in->text().isEmpty() && ui->bmi_kg_in->text().isEmpty())
-        ui->statusBar->showMessage(error_codes[ENTER_KG_CM]);
-    else if (ui->bmi_cm_in->text().isEmpty())
-        ui->statusBar->showMessage(error_codes[ENTER_CM]);
-    else if (ui->bmi_kg_in->text().isEmpty())
-        ui->statusBar->showMessage(error_codes[ENTER_KG]);
-    else{
+    if (isComplete(fit.BMI)) {
         ui->statusBar->clearMessage();
         bmi_cm = ui->bmi_cm_in->text().toFloat();
         bmi_kg = ui->bmi_kg_in->text().toFloat();
         bmi_m = bmi_cm / 100;
-        bmi_res = bmi_calculate(bmi_m, bmi_kg);
+        bmi_res = fit.bmiCalc(bmi_m, bmi_kg);
         str_res = QString::number(bmi_res);
         ui->bmi_res_out->setText("Your BMI is: " + str_res);
     }
-}
-
-float MainWindow::bmi_calculate(float cm_len, float kg_am)
-{
-    return (kg_am / (cm_len * cm_len));
-}
-
-float MainWindow::bmr_calculate(float cm_len, float kg_am, int age, int gender)
-{
-    return (gender == 0 ? (66 + (13.7 * kg_am) + (5 * cm_len) - (6.8 * age) ) :
-                          (655 + (9.6 * kg_am) + (1.8 * cm_len) - (4.7 * age) ));
 
 }
 
@@ -223,21 +248,15 @@ void MainWindow::on_bmrBtn_clicked()
     float bmr_cm = 0, bmr_kg = 0, bmr_age = 0, bmr_res = 0, cal_need = 0;
     QString str_res, cal_res;
 
-    if (ui->bmr_cm_in->text().isEmpty() && ui->bmr_kg_in->text().isEmpty())
-        ui->statusBar->showMessage(error_codes[ENTER_KG_CM]);
-    else if (ui->bmr_cm_in->text().isEmpty())
-        ui->statusBar->showMessage(error_codes[ENTER_CM]);
-    else if (ui->bmr_kg_in->text().isEmpty())
-        ui->statusBar->showMessage(error_codes[ENTER_KG]);
-    else{
+    if (isComplete(fit.BMR)) {
         ui->statusBar->clearMessage();
         bmr_cm = ui->bmr_cm_in->text().toFloat();
         bmr_kg = ui->bmr_kg_in->text().toFloat();
         bmr_age = !ui->bmr_age_in->text().isEmpty() ? ui->bmr_age_in->text().toFloat() : 30;
 
         bmr_res = ui->bmr_gender->currentIndex() == 1 ?
-                    bmr_calculate(bmr_cm, bmr_kg,bmr_age,1) :
-                    bmr_calculate(bmr_cm, bmr_kg,bmr_age);
+                   fit.bmrCalc(bmr_cm, bmr_kg,bmr_age,1) :
+                    fit.bmrCalc(bmr_cm, bmr_kg,bmr_age);
 
         setActivityLevel(cal_need, bmr_res);
 

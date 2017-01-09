@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "dbmanager.h"
+#include "fitnesscalculator.h"
 #include <QMainWindow>
 #include <QLineEdit>
 #include <QKeyEvent>
@@ -38,7 +39,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-
+    FitnessCalculator fit;
     enum FAILCODES {
         ENTER_KG_CM = 0,
         ENTER_CM = 1,
@@ -51,9 +52,9 @@ private:
     };
 
     QString error_codes[10] = {
-        "BMI ERROR: Missing lenght and weight",
-        "BMI ERROR: Missing lenght",
-        "BMI ERROR: Missign weight"
+        "Please enter lenght and weight",
+        "Please enter lenght",
+        "Please enter weight"
     };
 
     DbManager *db;
@@ -81,6 +82,8 @@ private:
     void populateBmrActivity();
 
     void setActivityLevel(float &cal_need, float bmr_res);
+
+    bool isComplete(int calculator);
 
 protected:
     virtual void keyPressEvent(QKeyEvent *event);
