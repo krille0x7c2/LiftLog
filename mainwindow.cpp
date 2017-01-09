@@ -66,10 +66,10 @@ void MainWindow::populateBmrGender()
 void MainWindow::populateBmrActivity()
 {
     ui->bmr_activity->addItem("Little or no exercise");
-    ui->bmr_activity->addItem("Light exercise/sports 1-3 days/week");
-    ui->bmr_activity->addItem("Moderate exercise/sports 3-5 days/week");
-    ui->bmr_activity->addItem("Hard exercise/sports 6-7 days a week");
-    ui->bmr_activity->addItem("Very hard exercise/sports & physical job or 2x training");
+    ui->bmr_activity->addItem("Light exercise");
+    ui->bmr_activity->addItem("Moderate exercise");
+    ui->bmr_activity->addItem("Hard exercise");
+    ui->bmr_activity->addItem("Very hard exercise");
 }
 
 MainWindow::MainWindow(QWidget *parent) :
