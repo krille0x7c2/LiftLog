@@ -13,6 +13,9 @@
 # Databases
 *.db
 
+# Vim 
+*~
+
 # Qt-es
 
 /.qmake.cache
