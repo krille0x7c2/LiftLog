@@ -10,6 +10,9 @@
 #include <QHBoxLayout>
 #include <QtCharts>
 #include <QList>
+#include <QDateTime>
+#include <QDateTimeAxis>
+#include <QValueAxis>
 
 using namespace QtCharts;
 
@@ -49,17 +52,31 @@ void MainWindow::addChart()
     QPushButton *three = new QPushButton(this);
     QPushButton *six = new QPushButton(this);
     QPushButton *all = new QPushButton(this);
-
+    QList<Lift *> lst;
     one->setText("One Month");
     three->setText("Three Month");
     six->setText("Six Month");
     all->setText("All");
 
-    *squatSeries << QPointF(11, 1) << QPointF(13, 3) << QPointF(17, 6) << QPointF(18, 3) << QPointF(20, 2);
-    *deadSeries << QPointF(10, 2) << QPointF(12, 4) << QPointF(16, 7) << QPointF(17, 4) << QPointF(21, 3);
-    *benchSeries << QPointF(9, 3) << QPointF(11, 5) << QPointF(15, 8) << QPointF(16, 5) << QPointF(22, 4);
-    *ohpSeries << QPointF(8, 4) << QPointF(10, 6) << QPointF(14, 9) << QPointF(15, 6) << QPointF(23, 5);
-    *rowSeries << QPointF(7, 5) << QPointF(9, 7) << QPointF(13, 10) << QPointF(14, 7) << QPointF(24, 6);
+    QString exercise = "Squat";
+    lst = db->getExerciseData(exercise);
+
+    QDateTime momentInTime;
+
+    foreach (Lift *d, lst) {
+        momentInTime.setDate(QDateTime::fromString(d->getDate(),"ddMMyyyy").date());
+        squatSeries->append(momentInTime.toMSecsSinceEpoch(), d->getWeight());
+    }
+
+    QDateTimeAxis *axisX = new QDateTimeAxis;
+    axisX->setTickCount(10);
+    axisX->setFormat("MMM yyyy");
+    axisX->setTitleText("Date");
+
+    QValueAxis *axisY = new QValueAxis;
+    axisY->setLabelFormat("%i");
+    axisY->setTitleText("Kg");
+
 
     squatSeries->setName("Squat");
     deadSeries->setName("Deadlift");
@@ -76,8 +93,12 @@ void MainWindow::addChart()
     chart->addSeries(benchSeries);
     chart->addSeries(ohpSeries);
     chart->addSeries(rowSeries);
-    chart->createDefaultAxes();
     chart->setTitle("Lift Progression");
+
+    chart->addAxis(axisX, Qt::AlignBottom);
+    squatSeries->attachAxis(axisX);
+    chart->addAxis(axisY, Qt::AlignLeft);
+    squatSeries->attachAxis(axisY);
 
     QChartView *chartView = new QChartView(chart);
     chartView->setRenderHint(QPainter::Antialiasing);

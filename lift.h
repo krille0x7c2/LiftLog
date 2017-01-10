@@ -2,6 +2,7 @@
 #define LIFT_H
 
 #include <QString>
+#include <QDateTime>
 
 class Lift
 {
