@@ -7,6 +7,9 @@
 #include <QLineEdit>
 #include <QKeyEvent>
 #include <Qt>
+#include <QtCharts>
+
+using namespace QtCharts;
 
 namespace Ui {
 class MainWindow;
@@ -57,6 +60,10 @@ private:
 
     DbManager *db;
 
+    QLineSeries *squatSeries, *deadSeries,
+    *benchSeries, *ohpSeries, *rowSeries,
+    *weightSeries;
+
     float bmi_calculate(float cm_len, float kg_am);
 
     float bmr_calculate(float cm_len, float kg_am, int age, int gender = 0);
@@ -82,6 +89,10 @@ private:
     void setActivityLevel(float &cal_need, float bmr_res);
 
     bool isComplete(int calculator);
+
+    void updateChart(QLineSeries *serie);
+
+    void updateAllCharts();
 
 protected:
     virtual void keyPressEvent(QKeyEvent *event);

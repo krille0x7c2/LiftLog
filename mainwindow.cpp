@@ -14,8 +14,6 @@
 #include <QDateTimeAxis>
 #include <QValueAxis>
 
-using namespace QtCharts;
-
 void MainWindow::populateExerciseBox()
 {
     ui->exerciseBox->addItem("Select");
@@ -39,34 +37,57 @@ void MainWindow::populateListWidget()
     ui->listWidgetMeasure->addItem("Waist");
 }
 
+void MainWindow::updateChart(QLineSeries *serie)
+{
+    QDateTime momentInTime;
+    QString exercise = serie->name();
+    QList<Lift *> lst = db->getExerciseData(exercise);
+
+    if (!lst.isEmpty()) {
+        foreach (Lift *d, lst) {
+            momentInTime.setDate(QDateTime::fromString(d->getDate(),"ddMMyyyy").date());
+            serie->append(momentInTime.toMSecsSinceEpoch(), d->getWeight());
+        }
+    }
+}
+
+void MainWindow::updateAllCharts()
+{
+    updateChart(squatSeries);
+    updateChart(deadSeries);
+    updateChart(benchSeries);
+    updateChart(ohpSeries);
+    updateChart(rowSeries);
+
+}
+
 void MainWindow::addChart()
 {
     QGridLayout *gridlay = new QGridLayout();
-    QLineSeries *squatSeries = new QLineSeries(this);
-    QLineSeries *deadSeries = new QLineSeries(this);
-    QLineSeries *benchSeries = new QLineSeries(this);
-    QLineSeries *ohpSeries = new QLineSeries(this);
-    QLineSeries *rowSeries = new QLineSeries(this);
-    QLineSeries *weightSeries = new QLineSeries(this);
+    squatSeries = new QLineSeries(this);
+    deadSeries = new QLineSeries(this);
+    benchSeries = new QLineSeries(this);
+    ohpSeries = new QLineSeries(this);
+    rowSeries = new QLineSeries(this);
+    weightSeries = new QLineSeries(this);
     QPushButton *one = new QPushButton(this);
     QPushButton *three = new QPushButton(this);
     QPushButton *six = new QPushButton(this);
     QPushButton *all = new QPushButton(this);
-    QList<Lift *> lst;
+
     one->setText("One Month");
     three->setText("Three Month");
     six->setText("Six Month");
     all->setText("All");
 
-    QString exercise = "Squat";
-    lst = db->getExerciseData(exercise);
+    squatSeries->setName("Squat");
+    deadSeries->setName("Deadlift");
+    benchSeries->setName("Bench");
+    ohpSeries->setName("OHP");
+    rowSeries->setName("Row");
 
-    QDateTime momentInTime;
+    updateAllCharts();
 
-    foreach (Lift *d, lst) {
-        momentInTime.setDate(QDateTime::fromString(d->getDate(),"ddMMyyyy").date());
-        squatSeries->append(momentInTime.toMSecsSinceEpoch(), d->getWeight());
-    }
 
     QDateTimeAxis *axisX = new QDateTimeAxis;
     axisX->setTickCount(10);
@@ -76,13 +97,6 @@ void MainWindow::addChart()
     QValueAxis *axisY = new QValueAxis;
     axisY->setLabelFormat("%i");
     axisY->setTitleText("Kg");
-
-
-    squatSeries->setName("Squat");
-    deadSeries->setName("Deadlift");
-    benchSeries->setName("Bench");
-    ohpSeries->setName("OHP");
-    rowSeries->setName("Row");
 
     QChart *chart = new QChart();
     chart->legend()->setVisible(true);
@@ -176,19 +190,18 @@ void MainWindow::printInput()
 
 void MainWindow::on_saveBtn_clicked()
 {
-    QList<Lift *> lst;
-     ui->statusBar->showMessage("Saving lift...",1000);
-     QString date = ui->calendarWidget->selectedDate().toString("ddMMyyyy");
-     QString exercise = ui->exerciseBox->currentText();
-     int reps = ui->lineEditReps->text().toInt();
-     int sets = ui->lineEditSets->text().toInt();
-     float weight = ui->lineEditWeight->text().toFloat();
-     db->addEntry(date, exercise, reps, sets, weight);
-     printInput();
-     clearInput();
-     populateExerciseBox();
-     toogleInput(false);
-
+    ui->statusBar->showMessage("Saving lift...",1000);
+    QString date = ui->calendarWidget->selectedDate().toString("ddMMyyyy");
+    QString exercise = ui->exerciseBox->currentText();
+    int reps = ui->lineEditReps->text().toInt();
+    int sets = ui->lineEditSets->text().toInt();
+    float weight = ui->lineEditWeight->text().toFloat();
+    db->addEntry(date, exercise, reps, sets, weight);
+    printInput();
+    clearInput();
+    populateExerciseBox();
+    toogleInput(false);
+    updateAllCharts();
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
@@ -277,6 +290,7 @@ bool MainWindow::isComplete(int calculator)
         return false;
     }
 }
+
 
 void MainWindow::on_bmiBtn_clicked()
 {
