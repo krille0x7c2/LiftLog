@@ -1,3 +1,4 @@
+#include "lift.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "dbmanager.h"
@@ -8,6 +9,7 @@
 #include <QDir>
 #include <QHBoxLayout>
 #include <QtCharts>
+#include <QList>
 
 using namespace QtCharts;
 
@@ -153,6 +155,7 @@ void MainWindow::printInput()
 
 void MainWindow::on_saveBtn_clicked()
 {
+    QList<Lift *> lst;
      ui->statusBar->showMessage("Saving lift...",1000);
      QString date = ui->calendarWidget->selectedDate().toString("ddMMyyyy");
      QString exercise = ui->exerciseBox->currentText();
@@ -161,7 +164,6 @@ void MainWindow::on_saveBtn_clicked()
      float weight = ui->lineEditWeight->text().toFloat();
      db->addEntry(date, exercise, reps, sets, weight);
      printInput();
-     db->printDatabase();
      clearInput();
      populateExerciseBox();
      toogleInput(false);

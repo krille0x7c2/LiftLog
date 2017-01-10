@@ -30,7 +30,7 @@ public:
 
     void printDatabase() const;
 
-    QList<Lift *> *getExerciseData(QString &exercise);
+    QList<Lift *> getExerciseData(QString &exercise);
 
     bool removeAllEntries();
 

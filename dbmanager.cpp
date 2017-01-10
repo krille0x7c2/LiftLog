@@ -163,11 +163,13 @@ void DbManager::printDatabase() const
     }
 }
 
-QList<Lift *>* DbManager::getExerciseData(QString &exercise)
+QList<Lift *> DbManager::getExerciseData(QString &exercise)
 {
-    QList<Lift *> *lst = new QList<Lift *>;
-    QSqlQuery query("SELECT exercise=:exercise FROM data");
+    QList<Lift *> lst;
+    QSqlQuery query;
+    query.prepare("SELECT * FROM data WHERE exercise=:exercise");
     query.bindValue(":exercise", exercise);
+    query.exec();
 
     int idDate = query.record().indexOf("date");
     int idExercise = query.record().indexOf("exercise");
@@ -182,8 +184,7 @@ QList<Lift *>* DbManager::getExerciseData(QString &exercise)
         QString reps = query.value(idSets).toString();
         QString weight = query.value(idWeight).toString();
         Lift *lift = new Lift(date, exercise, reps.toInt(), sets.toInt(), weight.toFloat());
-        lst->append(lift);
-        qDebug() << "===" << date << exercise << sets << reps << weight;
+        lst.append(lift);
     }
     return lst;
 }
