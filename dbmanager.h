@@ -1,8 +1,10 @@
 #ifndef DBMANAGER_H
 #define DBMANAGER_H
 
+#include "lift.h"
 #include <QSql>
 #include <QSqlDatabase>
+#include <QList>
 
 class DbManager
 {
@@ -27,6 +29,8 @@ public:
                      const int reps, const int sets, const float weight);
 
     void printDatabase() const;
+
+    QList<Lift *> *getExerciseData(QString &exercise);
 
     bool removeAllEntries();
 

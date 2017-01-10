@@ -3,6 +3,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QSqlRecord>
+#include <QList>
 
 DbManager::DbManager(const QString &path)
 {
@@ -160,6 +161,31 @@ void DbManager::printDatabase() const
         QString weight = query.value(idWeight).toString();
         qDebug() << "===" << date << exercise << sets << reps << weight;
     }
+}
+
+QList<Lift *>* DbManager::getExerciseData(QString &exercise)
+{
+    QList<Lift *> *lst = new QList<Lift *>;
+    QSqlQuery query("SELECT exercise=:exercise FROM data");
+    query.bindValue(":exercise", exercise);
+
+    int idDate = query.record().indexOf("date");
+    int idExercise = query.record().indexOf("exercise");
+    int idReps = query.record().indexOf("reps");
+    int idSets = query.record().indexOf("sets");
+    int idWeight = query.record().indexOf("weight");
+
+    while(query.next()) {
+        QString date = query.value(idDate).toString();
+        QString exercise = query.value(idExercise).toString();
+        QString sets = query.value(idReps).toString();
+        QString reps = query.value(idSets).toString();
+        QString weight = query.value(idWeight).toString();
+        Lift *lift = new Lift(date, exercise, reps.toInt(), sets.toInt(), weight.toFloat());
+        lst->append(lift);
+        qDebug() << "===" << date << exercise << sets << reps << weight;
+    }
+    return lst;
 }
 
 bool DbManager::removeAllEntries()

@@ -28,11 +28,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += main.cpp\
         mainwindow.cpp \
     dbmanager.cpp \
-    fitnesscalculator.cpp
+    fitnesscalculator.cpp \
+    lift.cpp
 
 HEADERS  += mainwindow.h \
     dbmanager.h \
-    fitnesscalculator.h
+    fitnesscalculator.h \
+    lift.h
 
 FORMS    += mainwindow.ui
 
