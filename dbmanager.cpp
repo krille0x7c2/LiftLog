@@ -2,6 +2,7 @@
 #include <QDebug>
 #include <QSqlQuery>
 #include <QSqlError>
+#include <QSqlRecord>
 
 DbManager::DbManager(const QString &path)
 {
@@ -89,7 +90,22 @@ bool DbManager::entryExists(const QString &date) const
 
 void DbManager::printDatabase() const
 {
+    qDebug() << "Entries in db:";
+    QSqlQuery query("SELECT * FROM data");
+    int idDate = query.record().indexOf("date");
+    int idExercise = query.record().indexOf("exercise");
+    int idReps = query.record().indexOf("reps");
+    int idSets = query.record().indexOf("sets");
+    int idWeight = query.record().indexOf("weight");
 
+    while(query.next()) {
+        QString date = query.value(idDate).toString();
+        QString exercise = query.value(idExercise).toString();
+        QString sets = query.value(idReps).toString();
+        QString reps = query.value(idSets).toString();
+        QString weight = query.value(idWeight).toString();
+        qDebug() << "===" << date << exercise << sets << reps << weight;
+    }
 }
 
 bool DbManager::removeAllEntrys()
