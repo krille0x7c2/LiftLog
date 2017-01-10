@@ -70,7 +70,7 @@ void MainWindow::addChart()
 
     QDateTimeAxis *axisX = new QDateTimeAxis;
     axisX->setTickCount(10);
-    axisX->setFormat("MMM yyyy");
+    axisX->setFormat("dd MMM yyyy");
     axisX->setTitleText("Date");
 
     QValueAxis *axisY = new QValueAxis;
