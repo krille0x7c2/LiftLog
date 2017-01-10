@@ -85,7 +85,19 @@ bool DbManager::removeEntry(const QString &date)
 
 bool DbManager::entryExists(const QString &date) const
 {
+    bool exists = false;
 
+    QSqlQuery query;
+    query.prepare("SELECT date FROM data WHERE date = (:date)");
+    query.bindValue(":date", date);
+
+    if (query.exec()) {
+        if (query.next())
+            exists = true;
+    } else {
+        qDebug() << "entry exists failed: " << query.lastError();
+    }
+    return exists;
 }
 
 void DbManager::printDatabase() const
