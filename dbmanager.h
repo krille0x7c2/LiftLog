@@ -23,7 +23,7 @@ public:
 
     void printDatabase() const;
 
-    bool removeAllEntrys();
+    bool removeAllEntries();
 
 private:
     QSqlDatabase m_db;

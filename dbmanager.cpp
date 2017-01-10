@@ -120,7 +120,7 @@ void DbManager::printDatabase() const
     }
 }
 
-bool DbManager::removeAllEntrys()
+bool DbManager::removeAllEntries()
 {
     bool success = false;
 
