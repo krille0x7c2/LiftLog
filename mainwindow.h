@@ -64,6 +64,8 @@ private:
     *benchSeries, *ohpSeries, *rowSeries,
     *weightSeries;
 
+    QChartView *chartView;
+
     float bmi_calculate(float cm_len, float kg_am);
 
     float bmr_calculate(float cm_len, float kg_am, int age, int gender = 0);

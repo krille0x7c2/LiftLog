@@ -114,7 +114,7 @@ void MainWindow::addChart()
     chart->addAxis(axisY, Qt::AlignLeft);
     squatSeries->attachAxis(axisY);
 
-    QChartView *chartView = new QChartView(chart);
+    chartView = new QChartView(chart);
     chartView->setRenderHint(QPainter::Antialiasing);
     gridlay->addWidget(chartView,0,0,1,4);
     gridlay->addWidget(one,1,0);
@@ -201,7 +201,6 @@ void MainWindow::on_saveBtn_clicked()
     clearInput();
     populateExerciseBox();
     toogleInput(false);
-    updateAllCharts();
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
