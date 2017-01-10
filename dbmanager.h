@@ -21,6 +21,11 @@ public:
 
     bool entryExists(const QString &date) const;
 
+    bool entryDuplicate(const QString &date, const QString &exercise) const;
+
+    bool updateEntry(const QString &date, const QString &exercise,
+                     const int reps, const int sets, const float weight);
+
     void printDatabase() const;
 
     bool removeAllEntries();

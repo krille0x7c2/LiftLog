@@ -77,6 +77,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     db = new DbManager("lifts.db");
+
+    if (db->isOpen()) {
+        db->createTable();
+    }
     ui->setupUi(this);
 
     populateBmrActivity();
@@ -113,7 +117,14 @@ void MainWindow::printInput()
 void MainWindow::on_saveBtn_clicked()
 {
      ui->statusBar->showMessage("Saving lift...",1000);
+     QString date = ui->calendarWidget->selectedDate().toString("ddMMyyyy");
+     QString exercise = ui->exerciseBox->currentText();
+     int reps = ui->lineEditReps->text().toInt();
+     int sets = ui->lineEditSets->text().toInt();
+     float weight = ui->lineEditWeight->text().toFloat();
+     db->addEntry(date, exercise, reps, sets, weight);
      printInput();
+     db->printDatabase();
      clearInput();
      populateExerciseBox();
      toogleInput(false);

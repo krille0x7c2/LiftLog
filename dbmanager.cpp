@@ -45,21 +45,26 @@ bool DbManager::addEntry(const QString &date, const QString &exercise, const int
 {
     bool is_success = false;
 
-    if (!date.isEmpty()) {
-        QSqlQuery query;
-        query.prepare("INSERT INTO data (date, exercise, reps, sets ,weight) VALUES (:date, :exercise, :reps, :sets, :weight)");
-        query.bindValue(":date", date);
-        query.bindValue(":exercise", exercise);
-        query.bindValue(":reps", reps);
-        query.bindValue(":sets", sets);
-        query.bindValue(":weight", weight);
+    if (!entryDuplicate(date,exercise)){
+        if (!date.isEmpty()) {
+            QSqlQuery query;
+            query.prepare("INSERT INTO data (date, exercise, reps, sets ,weight) VALUES (:date, :exercise, :reps, :sets, :weight)");
+            query.bindValue(":date", date);
+            query.bindValue(":exercise", exercise);
+            query.bindValue(":reps", reps);
+            query.bindValue(":sets", sets);
+            query.bindValue(":weight", weight);
 
-        if (query.exec())
-            is_success = true;
-        else
-            qDebug() << "new entry failed: " << query.lastError();
+            if (query.exec())
+                is_success = true;
+            else
+                qDebug() << "new entry failed: " << query.lastError();
+        } else {
+            qDebug() << "new entry failed date cannot be empty";
+        }
     } else {
-        qDebug() << "new entry failed date cannot be empty";
+        if (updateEntry(date, exercise, reps, sets, weight))
+            is_success = true;
     }
     return is_success;
 }
@@ -98,6 +103,43 @@ bool DbManager::entryExists(const QString &date) const
         qDebug() << "entry exists failed: " << query.lastError();
     }
     return exists;
+}
+
+bool DbManager::entryDuplicate(const QString &date, const QString &exercise) const
+{
+    bool duplicate = false;
+
+    QSqlQuery query;
+    query.prepare("SELECT date, exercise FROM data WHERE date = (:date) AND exercise = (:exercise)");
+    query.bindValue(":date", date);
+    query.bindValue(":exercise", exercise);
+
+    if (query.exec()) {
+        if (query.next())
+            duplicate = true;
+    } else {
+        qDebug() << "entry exists failed: " << query.lastError();
+    }
+    return duplicate;
+}
+
+bool DbManager::updateEntry(const QString &date, const QString &exercise, const int reps, const int sets, const float weight)
+{
+    bool success = false;
+
+    QSqlQuery query;
+    query.prepare("UPDATE data SET reps=:reps, sets=:sets, weight=:weight WHERE date =:date AND exercise =:exercise");
+    query.bindValue(":reps", reps);
+    query.bindValue(":sets", sets);
+    query.bindValue(":weight", weight);
+    query.bindValue(":date", date);
+    query.bindValue(":exercise", exercise);
+
+    if (query.exec())
+        success = true;
+    else
+        qDebug() << "update failed: " << query.lastError();
+    return success;
 }
 
 void DbManager::printDatabase() const
