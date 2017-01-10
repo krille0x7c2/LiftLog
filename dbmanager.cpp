@@ -122,5 +122,14 @@ void DbManager::printDatabase() const
 
 bool DbManager::removeAllEntrys()
 {
+    bool success = false;
 
+    QSqlQuery query;
+    query.prepare("DELETE FROM data");
+
+    if (query.exec())
+        success = true;
+    else
+        qDebug() << "remove all entries failed: " << query.lastError();
+    return success;
 }
