@@ -17,11 +17,14 @@ DbManager::DbManager(const QString &path)
 DbManager::~DbManager()
 {
 
+    if (m_db.isOpen())
+        m_db.close();
+
 }
 
 bool DbManager::isOpen() const
 {
-
+    return m_db.isOpen();
 }
 
 bool DbManager::createTable()
