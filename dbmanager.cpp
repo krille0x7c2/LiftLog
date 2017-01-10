@@ -63,12 +63,26 @@ bool DbManager::addEntry(const QString &date, const QString &exercise, const int
     return is_success;
 }
 
-bool DbManager::removeEntry(const int date)
+bool DbManager::removeEntry(const QString &date)
 {
+    bool is_success = false;
+
+    if (entryExists(date)) {
+        QSqlQuery query;
+        query.prepare("DELETE FROM data WHERE date = (:date)");
+        query.bindValue(":date", date);
+        is_success = query.exec();
+
+        if (!is_success)
+            qDebug() << "entry deletion failed: " << query.lastError();
+    } else {
+        qDebug() << "entry deletion failed: entry dosent exist";
+    }
+    return is_success;
 
 }
 
-bool DbManager::entryExists(const int date) const
+bool DbManager::entryExists(const QString &date) const
 {
 
 }

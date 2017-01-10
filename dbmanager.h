@@ -17,9 +17,9 @@ public:
     bool addEntry(const QString &date, const QString &exercise,
                   const int reps, const int sets, const float weight);
 
-    bool removeEntry(const int date);
+    bool removeEntry(const QString &date);
 
-    bool entryExists(const int date) const;
+    bool entryExists(const QString &date) const;
 
     void printDatabase() const;
 
