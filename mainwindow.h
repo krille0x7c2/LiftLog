@@ -66,6 +66,10 @@ private:
 
     QChartView *chartView;
 
+    QDateTimeAxis *axisX;
+
+    QValueAxis *axisY;
+
     float bmi_calculate(float cm_len, float kg_am);
 
     float bmr_calculate(float cm_len, float kg_am, int age, int gender = 0);
@@ -95,6 +99,8 @@ private:
     void updateChart(QLineSeries *serie);
 
     void updateAllCharts();
+
+    void changeSeries(QLineSeries *serie, const QString &date, const float weight);
 
 protected:
     virtual void keyPressEvent(QKeyEvent *event);

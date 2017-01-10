@@ -61,6 +61,27 @@ void MainWindow::updateAllCharts()
 
 }
 
+void MainWindow::changeSeries(QLineSeries *serie, const QString &date, const float weight)
+{
+
+    QString name = serie->name();
+    QList<Lift *> lst = db->getExerciseData(name);
+    if (serie) {
+        serie->chart()->removeSeries(serie);
+    }
+    serie = new QLineSeries(this);
+    QDateTime momentInTime;
+    if (!lst.isEmpty()) {
+        foreach (Lift *l, lst) {
+            momentInTime.setDate(QDateTime::fromString(l->getDate(), "ddMMyyyy").date());
+            serie->append(momentInTime.toMSecsSinceEpoch(), l->getWeight());
+        }
+
+    }
+    serie->setName(name);
+    chartView->chart()->addSeries(serie);
+}
+
 void MainWindow::addChart()
 {
     QGridLayout *gridlay = new QGridLayout();
@@ -88,13 +109,12 @@ void MainWindow::addChart()
 
     updateAllCharts();
 
-
-    QDateTimeAxis *axisX = new QDateTimeAxis;
+    axisX = new QDateTimeAxis;
     axisX->setTickCount(10);
     axisX->setFormat("dd MMM yyyy");
     axisX->setTitleText("Date");
 
-    QValueAxis *axisY = new QValueAxis;
+    axisY = new QValueAxis;
     axisY->setLabelFormat("%i");
     axisY->setTitleText("Kg");
 
@@ -107,6 +127,7 @@ void MainWindow::addChart()
     chart->addSeries(benchSeries);
     chart->addSeries(ohpSeries);
     chart->addSeries(rowSeries);
+
     chart->setTitle("Lift Progression");
 
     chart->addAxis(axisX, Qt::AlignBottom);
@@ -201,6 +222,7 @@ void MainWindow::on_saveBtn_clicked()
     clearInput();
     populateExerciseBox();
     toogleInput(false);
+    changeSeries(squatSeries, date, weight);
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
