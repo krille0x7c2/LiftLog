@@ -35,3 +35,6 @@ HEADERS  += mainwindow.h \
     fitnesscalculator.h
 
 FORMS    += mainwindow.ui
+
+RESOURCES += \
+    database.qrc

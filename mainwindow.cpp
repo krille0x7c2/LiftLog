@@ -36,19 +36,55 @@ void MainWindow::populateListWidget()
 
 void MainWindow::addChart()
 {
-    QHBoxLayout *hbox = new QHBoxLayout();
-    QLineSeries *series = new QLineSeries();
-    *series << QPointF(11, 1) << QPointF(13, 3) << QPointF(17, 6) << QPointF(18, 3) << QPointF(20, 2);
+    QGridLayout *gridlay = new QGridLayout();
+    QLineSeries *squatSeries = new QLineSeries(this);
+    QLineSeries *deadSeries = new QLineSeries(this);
+    QLineSeries *benchSeries = new QLineSeries(this);
+    QLineSeries *ohpSeries = new QLineSeries(this);
+    QLineSeries *rowSeries = new QLineSeries(this);
+    QLineSeries *weightSeries = new QLineSeries(this);
+    QPushButton *one = new QPushButton(this);
+    QPushButton *three = new QPushButton(this);
+    QPushButton *six = new QPushButton(this);
+    QPushButton *all = new QPushButton(this);
+
+    one->setText("One Month");
+    three->setText("Three Month");
+    six->setText("Six Month");
+    all->setText("All");
+
+    *squatSeries << QPointF(11, 1) << QPointF(13, 3) << QPointF(17, 6) << QPointF(18, 3) << QPointF(20, 2);
+    *deadSeries << QPointF(10, 2) << QPointF(12, 4) << QPointF(16, 7) << QPointF(17, 4) << QPointF(21, 3);
+    *benchSeries << QPointF(9, 3) << QPointF(11, 5) << QPointF(15, 8) << QPointF(16, 5) << QPointF(22, 4);
+    *ohpSeries << QPointF(8, 4) << QPointF(10, 6) << QPointF(14, 9) << QPointF(15, 6) << QPointF(23, 5);
+    *rowSeries << QPointF(7, 5) << QPointF(9, 7) << QPointF(13, 10) << QPointF(14, 7) << QPointF(24, 6);
+
+    squatSeries->setName("Squat");
+    deadSeries->setName("Deadlift");
+    benchSeries->setName("Bench");
+    ohpSeries->setName("OHP");
+    rowSeries->setName("Row");
+
     QChart *chart = new QChart();
-    chart->legend()->hide();
-    chart->addSeries(series);
+    chart->legend()->setVisible(true);
+    chart->legend()->setAlignment(Qt::AlignBottom);
+
+    chart->addSeries(squatSeries);
+    chart->addSeries(deadSeries);
+    chart->addSeries(benchSeries);
+    chart->addSeries(ohpSeries);
+    chart->addSeries(rowSeries);
     chart->createDefaultAxes();
-    chart->setTitle("Simple line chart example");
+    chart->setTitle("Lift Progression");
 
     QChartView *chartView = new QChartView(chart);
     chartView->setRenderHint(QPainter::Antialiasing);
-    hbox->addWidget(chartView);
-    ui->tab_stat->setLayout(hbox);
+    gridlay->addWidget(chartView,0,0,1,4);
+    gridlay->addWidget(one,1,0);
+    gridlay->addWidget(three,1,1);
+    gridlay->addWidget(six,1,2);
+    gridlay->addWidget(all,1,3);
+    ui->tab_stat->setLayout(gridlay);
 }
 
 void MainWindow::populateCalculateLst()
@@ -94,6 +130,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    delete db;
     delete ui;
 }
 
