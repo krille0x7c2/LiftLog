@@ -11,14 +11,14 @@
 
 using namespace QtCharts;
 
-void MainWindow::populateComboBox()
+void MainWindow::populateExerciseBox()
 {
-    ui->comboBox->addItem("Select");
-    ui->comboBox->addItem("Squat");
-    ui->comboBox->addItem("Deadlift");
-    ui->comboBox->addItem("Bench Press");
-    ui->comboBox->addItem("OHP");
-    ui->comboBox->addItem("Row");
+    ui->exerciseBox->addItem("Select");
+    ui->exerciseBox->addItem("Squat");
+    ui->exerciseBox->addItem("Deadlift");
+    ui->exerciseBox->addItem("Bench Press");
+    ui->exerciseBox->addItem("OHP");
+    ui->exerciseBox->addItem("Row");
 }
 
 void MainWindow::populateListWidget()
@@ -83,7 +83,7 @@ MainWindow::MainWindow(QWidget *parent) :
     populateBmrGender();
     populateCalculateLst();
     addChart();
-    populateComboBox();
+    populateExerciseBox();
     populateListWidget();
 }
 
@@ -98,13 +98,13 @@ void MainWindow::clearInput()
     ui->lineEditReps->clear();
     ui->lineEditSets->clear();
     ui->lineEditWeight->clear();
-    ui->comboBox->clear();
+    ui->exerciseBox->clear();
 }
 
 void MainWindow::printInput()
 {
     qDebug() << ui->calendarWidget->selectedDate().toString("ddMMyyyy");
-    qDebug() << ui->comboBox->currentText();
+    qDebug() << ui->exerciseBox->currentText();
     qDebug() << ui->lineEditWeight->text();
     qDebug() << ui->lineEditReps->text();
     qDebug() << ui->lineEditSets->text();
@@ -113,10 +113,9 @@ void MainWindow::printInput()
 void MainWindow::on_saveBtn_clicked()
 {
      ui->statusBar->showMessage("Saving lift...",1000);
-     db->addEntry("Christian");
      printInput();
      clearInput();
-     populateComboBox();
+     populateExerciseBox();
      toogleInput(false);
 
 }
@@ -150,7 +149,7 @@ void MainWindow::toogleInput(bool b)
     ui->saveBtn->setEnabled(b);
 }
 
-void MainWindow::on_comboBox_activated(int index)
+void MainWindow::on_exerciseBox_activated(int index)
 {
     qDebug() << index;
     if (index != 0)

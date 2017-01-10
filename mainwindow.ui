@@ -24,7 +24,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_log">
        <attribute name="title">
@@ -82,7 +82,7 @@
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout">
            <item>
-            <widget class="QComboBox" name="comboBox">
+            <widget class="QComboBox" name="exerciseBox">
              <property name="toolTip">
               <string>Choose lift</string>
              </property>

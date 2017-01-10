@@ -19,17 +19,37 @@ DbManager::~DbManager()
 
 }
 
-bool DbManager::addEntry(const QString &name)
+bool DbManager::isOpen() const
 {
-    bool success = false;
-    QSqlQuery query;
-    query.prepare("INSERT INTO data (name) VALUES (:name)");
-    query.bindValue(":name", name);
 
-    if(query.exec())
-        success = true;
-    else
-        qDebug() << "addEntry Error: " << query.lastError();
-    return success;
 }
 
+bool DbManager::createTable()
+{
+
+}
+
+bool DbManager::addEntry(const int date, const QString &exercise, const int reps, const int sets, const float weight)
+{
+
+}
+
+bool DbManager::removeEntry(const int date)
+{
+
+}
+
+bool DbManager::entryExists(const int date) const
+{
+
+}
+
+void DbManager::printDatabase() const
+{
+
+}
+
+bool DbManager::removeAllEntrys()
+{
+
+}

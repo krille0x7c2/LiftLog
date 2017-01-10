@@ -23,7 +23,7 @@ public:
 
 private slots:
 
-    void on_comboBox_activated(int index);
+    void on_exerciseBox_activated(int index);
 
     void on_saveBtn_clicked();
 
@@ -61,7 +61,7 @@ private:
 
     float bmr_calculate(float cm_len, float kg_am, int age, int gender = 0);
 
-    void populateComboBox();
+    void populateExerciseBox();
 
     void toogleInput(bool b);
 

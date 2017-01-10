@@ -10,7 +10,21 @@ public:
     DbManager(const QString& path);
     ~DbManager();
 
-    bool addEntry(const QString &name);
+    bool isOpen() const;
+
+    bool createTable();
+
+    bool addEntry(const int date, const QString &exercise,
+                  const int reps, const int sets, const float weight);
+
+    bool removeEntry(const int date);
+
+    bool entryExists(const int date) const;
+
+    void printDatabase() const;
+
+    bool removeAllEntrys();
+
 private:
     QSqlDatabase m_db;
 };
