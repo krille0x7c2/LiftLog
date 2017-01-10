@@ -14,7 +14,7 @@ public:
 
     bool createTable();
 
-    bool addEntry(const int date, const QString &exercise,
+    bool addEntry(const QString &date, const QString &exercise,
                   const int reps, const int sets, const float weight);
 
     bool removeEntry(const int date);
