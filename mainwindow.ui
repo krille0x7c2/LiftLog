@@ -116,7 +116,7 @@
               <string/>
              </property>
              <property name="maxLength">
-              <number>4</number>
+              <number>6</number>
              </property>
              <property name="placeholderText">
               <string>weight</string>
@@ -129,7 +129,7 @@
               <bool>false</bool>
              </property>
              <property name="maxLength">
-              <number>4</number>
+              <number>2</number>
              </property>
              <property name="placeholderText">
               <string>reps</string>
@@ -142,7 +142,7 @@
               <bool>false</bool>
              </property>
              <property name="maxLength">
-              <number>4</number>
+              <number>2</number>
              </property>
              <property name="placeholderText">
               <string>sets</string>
