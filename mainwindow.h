@@ -1,15 +1,19 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "chart.h"
+#include "chartview.h"
 #include "dbmanager.h"
 #include "fitnesscalculator.h"
 #include <QMainWindow>
 #include <QLineEdit>
 #include <QKeyEvent>
 #include <Qt>
-#include <QtCharts>
+#include <QtCharts/QLineSeries>
+#include <QtCharts/QValueAxis>
+#include <QtCharts/QDateTimeAxis>
 
-using namespace QtCharts;
+QT_CHARTS_USE_NAMESPACE
 
 namespace Ui {
 class MainWindow;
@@ -64,7 +68,7 @@ private:
     *benchSeries, *ohpSeries, *rowSeries,
     *weightSeries;
 
-    QChartView *chartView;
+    ChartView *chartView;
 
     QDateTimeAxis *axisX;
 

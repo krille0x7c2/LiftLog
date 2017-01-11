@@ -29,12 +29,16 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     dbmanager.cpp \
     fitnesscalculator.cpp \
-    lift.cpp
+    lift.cpp \
+    chartview.cpp \
+    chart.cpp
 
 HEADERS  += mainwindow.h \
     dbmanager.h \
     fitnesscalculator.h \
-    lift.h
+    lift.h \
+    chartview.h \
+    chart.h
 
 FORMS    += mainwindow.ui
 

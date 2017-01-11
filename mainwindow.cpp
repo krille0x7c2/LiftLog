@@ -1,3 +1,5 @@
+#include "chart.h"
+#include "chartview.h"
 #include "lift.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -8,11 +10,11 @@
 #include <QInputDialog>
 #include <QDir>
 #include <QHBoxLayout>
-#include <QtCharts>
 #include <QList>
 #include <QDateTime>
-#include <QDateTimeAxis>
-#include <QValueAxis>
+#include <QtCharts/QLineSeries>
+#include <QtCharts/QDateTimeAxis>
+#include <QtCharts/QValueAxis>
 
 void MainWindow::populateExerciseBox()
 {
@@ -76,7 +78,6 @@ void MainWindow::changeSeries(QLineSeries *serie, const QString &date, const flo
             momentInTime.setDate(QDateTime::fromString(l->getDate(), "ddMMyyyy").date());
             serie->append(momentInTime.toMSecsSinceEpoch(), l->getWeight());
         }
-
     }
     serie->setName(name);
     chartView->chart()->addSeries(serie);
@@ -91,15 +92,6 @@ void MainWindow::addChart()
     ohpSeries = new QLineSeries(this);
     rowSeries = new QLineSeries(this);
     weightSeries = new QLineSeries(this);
-    QPushButton *one = new QPushButton(this);
-    QPushButton *three = new QPushButton(this);
-    QPushButton *six = new QPushButton(this);
-    QPushButton *all = new QPushButton(this);
-
-    one->setText("One Month");
-    three->setText("Three Month");
-    six->setText("Six Month");
-    all->setText("All");
 
     squatSeries->setName("Squat");
     deadSeries->setName("Deadlift");
@@ -118,7 +110,7 @@ void MainWindow::addChart()
     axisY->setLabelFormat("%i");
     axisY->setTitleText("Kg");
 
-    QChart *chart = new QChart();
+    Chart *chart = new Chart();
     chart->legend()->setVisible(true);
     chart->legend()->setAlignment(Qt::AlignBottom);
 
@@ -135,13 +127,9 @@ void MainWindow::addChart()
     chart->addAxis(axisY, Qt::AlignLeft);
     squatSeries->attachAxis(axisY);
 
-    chartView = new QChartView(chart);
+    chartView = new ChartView(chart);
     chartView->setRenderHint(QPainter::Antialiasing);
-    gridlay->addWidget(chartView,0,0,1,4);
-    gridlay->addWidget(one,1,0);
-    gridlay->addWidget(three,1,1);
-    gridlay->addWidget(six,1,2);
-    gridlay->addWidget(all,1,3);
+    gridlay->addWidget(chartView);
     ui->tab_stat->setLayout(gridlay);
 }
 
