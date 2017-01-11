@@ -267,12 +267,12 @@ void MainWindow::addSeries()
     if (m_series.count() == 1) {
         //Add X axis as dates
         axisX = new QDateTimeAxis;
-        axisX->setTickCount(7);
+        axisX->setTickCount(10);
         axisX->setFormat("dd MMM yyyy");
         axisX->setTitleText("Date");
         //Add Y axis as integers
         axisY = new QValueAxis;
-        axisY->setTickCount(15);
+        axisY->setTickCount(5);
         axisY->setLabelFormat("%i");
         axisY->setTitleText("Kg");
         //Set the axis in place
