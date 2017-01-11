@@ -43,8 +43,19 @@ private slots:
     void on_cal_menu_lst_clicked(const QModelIndex &index);
 
 private:
+
     Ui::MainWindow *ui;
     FitnessCalculator fit;
+    QStringList exercise_lst;
+
+    enum EXERCISES {
+        SQUAT,
+        DEAD,
+        BENCH,
+        OHP,
+        ROW,
+    };
+
     enum FAILCODES {
         ENTER_KG_CM = 0,
         ENTER_CM = 1,
@@ -68,11 +79,11 @@ private:
     *benchSeries, *ohpSeries, *rowSeries,
     *weightSeries;
 
+    Chart *chart;
     ChartView *chartView;
-
     QDateTimeAxis *axisX;
-
     QValueAxis *axisY;
+    QList<QLineSeries *> m_series;
 
     float bmi_calculate(float cm_len, float kg_am);
 
@@ -88,7 +99,7 @@ private:
 
     void populateListWidget();
 
-    void addChart();
+    void initChart();
 
     void populateCalculateLst();
     
@@ -100,9 +111,9 @@ private:
 
     bool isComplete(int calculator);
 
-    void updateChart(QLineSeries *serie);
+    void addSeries();
 
-    void updateAllCharts();
+    void removeSeries();
 
 protected:
     virtual void keyPressEvent(QKeyEvent *event);

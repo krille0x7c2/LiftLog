@@ -39,87 +39,32 @@ void MainWindow::populateListWidget()
     ui->listWidgetMeasure->addItem("Waist");
 }
 
-void MainWindow::updateChart(QLineSeries *serie)
+void MainWindow::initChart()
 {
-    QDateTime momentInTime;
-    QString exercise = serie->name();
-    QList<Lift *> lst = db->getExerciseData(exercise);
+    chart = new Chart();
+    chartView = new ChartView(chart, this);
+    QGridLayout *c_layout = new QGridLayout();
+    c_layout->addWidget(chartView, 0, 1, 3, 1);
+    ui->tab_stat->setLayout(c_layout);
 
-    if (!lst.isEmpty()) {
-        foreach (Lift *d, lst) {
-            momentInTime.setDate(QDateTime::fromString(d->getDate(),"ddMMyyyy").date());
-            serie->append(momentInTime.toMSecsSinceEpoch(), d->getWeight());
-        }
-    }
-}
+    //TODO add series
+    addSeries();
+    addSeries();
+    addSeries();
+    addSeries();
+    addSeries();
 
-void MainWindow::updateAllCharts()
-{
-    updateChart(squatSeries);
-    updateChart(deadSeries);
-    updateChart(benchSeries);
-    updateChart(ohpSeries);
-    updateChart(rowSeries);
-
-}
-
-void MainWindow::addChart()
-{
-    QGridLayout *gridlay = new QGridLayout();
-    squatSeries = new QLineSeries(this);
-    deadSeries = new QLineSeries(this);
-    benchSeries = new QLineSeries(this);
-    ohpSeries = new QLineSeries(this);
-    rowSeries = new QLineSeries(this);
-    weightSeries = new QLineSeries(this);
-
-    squatSeries->setName("Squat");
-    deadSeries->setName("Deadlift");
-    benchSeries->setName("Bench Press");
-    ohpSeries->setName("OHP");
-    rowSeries->setName("Row");
-
-    updateAllCharts();
-
-    axisX = new QDateTimeAxis;
-    axisX->setTickCount(7);
-    axisX->setFormat("dd MMM yyyy");
-    axisX->setTitleText("Date");
-
-    axisY = new QValueAxis;
-    axisY->setTickCount(15);
-    axisY->setLabelFormat("%i");
-    axisY->setTitleText("Kg");
-
-    Chart *chart = new Chart();
+    //Set title and misc settings
+    chart->setTitle("Weight progression");
     chart->legend()->setVisible(true);
     chart->legend()->setAlignment(Qt::AlignBottom);
 
-    chart->addSeries(squatSeries);
-    chart->addSeries(deadSeries);
-    chart->addSeries(benchSeries);
-    chart->addSeries(ohpSeries);
-    chart->addSeries(rowSeries);
-
-    chart->setTitle("Lift Progression");
-
-    chart->addAxis(axisX, Qt::AlignBottom);
-    squatSeries->attachAxis(axisX);
-    deadSeries->attachAxis(axisX);
-    benchSeries->attachAxis(axisX);
-    ohpSeries->attachAxis(axisX);
-    rowSeries->attachAxis(axisX);
-    chart->addAxis(axisY, Qt::AlignLeft);
-    squatSeries->attachAxis(axisY);
-    deadSeries->attachAxis(axisY);
-    benchSeries->attachAxis(axisY);
-    ohpSeries->attachAxis(axisY);
-    rowSeries->attachAxis(axisY);
-
-    chartView = new ChartView(chart);
     chartView->setRenderHint(QPainter::Antialiasing);
-    gridlay->addWidget(chartView);
-    ui->tab_stat->setLayout(gridlay);
+
+
+
+
+
 }
 
 void MainWindow::populateCalculateLst()
@@ -147,6 +92,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+
+    exercise_lst << "Squat" << "Deadlift" << "Bench Press" << "OHP" << "Row";
     db = new DbManager("lifts.db");
 
     if (db->isOpen()) {
@@ -157,7 +104,7 @@ MainWindow::MainWindow(QWidget *parent) :
     populateBmrActivity();
     populateBmrGender();
     populateCalculateLst();
-    addChart();
+    initChart();
     populateExerciseBox();
     populateListWidget();
 }
@@ -204,6 +151,7 @@ void MainWindow::on_saveBtn_clicked()
     clearInput();
     populateExerciseBox();
     toogleInput(false);
+
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
@@ -290,6 +238,60 @@ bool MainWindow::isComplete(int calculator)
         break;
     default:
         return false;
+    }
+}
+
+void MainWindow::addSeries()
+{
+
+    QLineSeries *series = new QLineSeries();
+    m_series.append(series);
+
+    series->setName(exercise_lst.at(m_series.count() - 1));
+
+    QDateTime momentInTime;
+    QString exercise = exercise_lst.at(m_series.count() - 1);
+    QList<Lift *> lst = db->getExerciseData(exercise);
+    QList<QPointF> data;
+    if (!lst.isEmpty()) {
+        foreach (Lift *d, lst) {
+            momentInTime.setDate(QDateTime::fromString(d->getDate(),"ddMMyyyy").date());
+            data.append(QPointF(momentInTime.toMSecsSinceEpoch(), d->getWeight()));
+        }
+    }
+
+    series->append(data);
+    chart->addSeries(series);
+
+    //Ignore all but first series
+    if (m_series.count() == 1) {
+        //Add X axis as dates
+        axisX = new QDateTimeAxis;
+        axisX->setTickCount(7);
+        axisX->setFormat("dd MMM yyyy");
+        axisX->setTitleText("Date");
+        //Add Y axis as integers
+        axisY = new QValueAxis;
+        axisY->setTickCount(15);
+        axisY->setLabelFormat("%i");
+        axisY->setTitleText("Kg");
+        //Set the axis in place
+        chart->addAxis(axisX, Qt::AlignBottom);
+        chart->addAxis(axisY, Qt::AlignLeft);
+    }
+    //Attach axis to each series
+    series->attachAxis(axisX);
+    series->attachAxis(axisY);
+}
+
+void MainWindow::removeSeries()
+{
+    //Remove the last series from chart
+    if (m_series.count() > 0) {
+        QLineSeries *series = m_series.last();
+        chart->removeSeries(series);
+        m_series.removeLast();
+        delete series;
     }
 }
 
