@@ -104,8 +104,6 @@ private:
 
     void updateAllCharts();
 
-    void changeSeries(QLineSeries *serie, const QString &date, const float weight);
-
 protected:
     virtual void keyPressEvent(QKeyEvent *event);
 };

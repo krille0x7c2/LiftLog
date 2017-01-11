@@ -49,7 +49,7 @@
            <bool>true</bool>
           </property>
           <property name="navigationBarVisible">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
          </widget>
         </item>

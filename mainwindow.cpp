@@ -63,26 +63,6 @@ void MainWindow::updateAllCharts()
 
 }
 
-void MainWindow::changeSeries(QLineSeries *serie, const QString &date, const float weight)
-{
-
-    QString name = serie->name();
-    QList<Lift *> lst = db->getExerciseData(name);
-    if (serie) {
-        serie->chart()->removeSeries(serie);
-    }
-    serie = new QLineSeries(this);
-    QDateTime momentInTime;
-    if (!lst.isEmpty()) {
-        foreach (Lift *l, lst) {
-            momentInTime.setDate(QDateTime::fromString(l->getDate(), "ddMMyyyy").date());
-            serie->append(momentInTime.toMSecsSinceEpoch(), l->getWeight());
-        }
-    }
-    serie->setName(name);
-    chartView->chart()->addSeries(serie);
-}
-
 void MainWindow::addChart()
 {
     QGridLayout *gridlay = new QGridLayout();
@@ -95,18 +75,19 @@ void MainWindow::addChart()
 
     squatSeries->setName("Squat");
     deadSeries->setName("Deadlift");
-    benchSeries->setName("Bench");
+    benchSeries->setName("Bench Press");
     ohpSeries->setName("OHP");
     rowSeries->setName("Row");
 
     updateAllCharts();
 
     axisX = new QDateTimeAxis;
-    axisX->setTickCount(10);
+    axisX->setTickCount(7);
     axisX->setFormat("dd MMM yyyy");
     axisX->setTitleText("Date");
 
     axisY = new QValueAxis;
+    axisY->setTickCount(15);
     axisY->setLabelFormat("%i");
     axisY->setTitleText("Kg");
 
@@ -124,8 +105,16 @@ void MainWindow::addChart()
 
     chart->addAxis(axisX, Qt::AlignBottom);
     squatSeries->attachAxis(axisX);
+    deadSeries->attachAxis(axisX);
+    benchSeries->attachAxis(axisX);
+    ohpSeries->attachAxis(axisX);
+    rowSeries->attachAxis(axisX);
     chart->addAxis(axisY, Qt::AlignLeft);
     squatSeries->attachAxis(axisY);
+    deadSeries->attachAxis(axisY);
+    benchSeries->attachAxis(axisY);
+    ohpSeries->attachAxis(axisY);
+    rowSeries->attachAxis(axisY);
 
     chartView = new ChartView(chart);
     chartView->setRenderHint(QPainter::Antialiasing);
@@ -199,18 +188,22 @@ void MainWindow::printInput()
 
 void MainWindow::on_saveBtn_clicked()
 {
+    int reps, sets;
+    float weight;
+    QString date, exercise;
+
+    date = ui->calendarWidget->selectedDate().toString("ddMMyyyy");
+    exercise = ui->exerciseBox->currentText();
+    reps = ui->lineEditReps->text().toInt();
+    sets = ui->lineEditSets->text().toInt();
+    weight = ui->lineEditWeight->text().toFloat();
+
     ui->statusBar->showMessage("Saving lift...",1000);
-    QString date = ui->calendarWidget->selectedDate().toString("ddMMyyyy");
-    QString exercise = ui->exerciseBox->currentText();
-    int reps = ui->lineEditReps->text().toInt();
-    int sets = ui->lineEditSets->text().toInt();
-    float weight = ui->lineEditWeight->text().toFloat();
     db->addEntry(date, exercise, reps, sets, weight);
-    printInput();
+    db->printDatabase();
     clearInput();
     populateExerciseBox();
     toogleInput(false);
-    changeSeries(squatSeries, date, weight);
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
@@ -219,7 +212,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     switch(ui->tabWidget->currentIndex()){
     case 0:
         if (event->key() == Qt::Key_Return)
-            emit on_saveBtn_clicked();
+            on_saveBtn_clicked();
         break;
     case 1:
         //Free slot
