@@ -34,8 +34,6 @@ private slots:
 
     void on_saveBtn_clicked();
 
-    void on_listWidgetMeasure_doubleClicked(const QModelIndex &index);
-
     void on_bmiBtn_clicked();
 
     void on_bmrBtn_clicked();

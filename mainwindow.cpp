@@ -26,19 +26,6 @@ void MainWindow::populateExerciseBox()
     ui->exerciseBox->addItem("Row");
 }
 
-void MainWindow::populateListWidget()
-{
-    ui->listWidgetMeasure->addItem("Bicep L");
-    ui->listWidgetMeasure->addItem("Bicep R");
-    ui->listWidgetMeasure->addItem("Body Fat");
-    ui->listWidgetMeasure->addItem("Hips");
-    ui->listWidgetMeasure->addItem("Lean Mass");
-    ui->listWidgetMeasure->addItem("Thigh L");
-    ui->listWidgetMeasure->addItem("Thigh R");
-    ui->listWidgetMeasure->addItem("Weight");
-    ui->listWidgetMeasure->addItem("Waist");
-}
-
 void MainWindow::initChart()
 {
     chart = new Chart();
@@ -101,7 +88,6 @@ MainWindow::MainWindow(QWidget *parent) :
     populateCalculateLst();
     initChart();
     populateExerciseBox();
-    populateListWidget();
 }
 
 
@@ -278,15 +264,6 @@ void MainWindow::on_exerciseBox_activated(int index)
     qDebug() << index;
     if (index != 0)
        toogleInput(true);
-}
-
-void MainWindow::on_listWidgetMeasure_doubleClicked(const QModelIndex &index)
-{
-    bool ok;
-    int i = QInputDialog::getInt(this, tr("QInputDialog::getInteger()"),
-                                     tr("Value:"), 25, 0, 500, 1, &ok);
-    if (ok)
-        qDebug() << index.row() << i;
 }
 
 void MainWindow::on_bmiBtn_clicked()
