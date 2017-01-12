@@ -60,11 +60,6 @@ void MainWindow::initChart()
     chart->legend()->setAlignment(Qt::AlignBottom);
 
     chartView->setRenderHint(QPainter::Antialiasing);
-
-
-
-
-
 }
 
 void MainWindow::populateCalculateLst()
@@ -93,11 +88,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
 
-    exercise_lst << "Squat" << "Deadlift" << "Bench Press" << "OHP" << "Row";
-    db = new DbManager("lifts.db");
+    exerciseLst << "Squat" << "Deadlift" << "Bench Press" << "OHP" << "Row";
+    dbManager = new DbManager("lifts.db");
 
-    if (db->isOpen()) {
-        db->createTable();
+    if (dbManager->isOpen()) {
+        dbManager->createTable();
     }
     ui->setupUi(this);
 
@@ -112,7 +107,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    delete db;
+    delete dbManager;
     delete ui;
 }
 
@@ -133,70 +128,12 @@ void MainWindow::printInput()
     qDebug() << ui->lineEditSets->text();
 }
 
-void MainWindow::on_saveBtn_clicked()
-{
-    int reps, sets;
-    float weight;
-    QString date, exercise;
-
-    date = ui->calendarWidget->selectedDate().toString("ddMMyyyy");
-    exercise = ui->exerciseBox->currentText();
-    reps = ui->lineEditReps->text().toInt();
-    sets = ui->lineEditSets->text().toInt();
-    weight = ui->lineEditWeight->text().toFloat();
-
-    ui->statusBar->showMessage("Saving lift...",1000);
-    db->addEntry(date, exercise, reps, sets, weight);
-    db->printDatabase();
-    clearInput();
-    populateExerciseBox();
-    toogleInput(false);
-
-}
-
-void MainWindow::keyPressEvent(QKeyEvent *event)
-{
-    //Check active tab
-    switch(ui->tabWidget->currentIndex()){
-    case 0:
-        if (event->key() == Qt::Key_Return)
-            on_saveBtn_clicked();
-        break;
-    case 1:
-        //Free slot
-        break;
-    case 2:
-        //Free slot
-        break;
-    case 3:
-        //Free slot
-    default:
-        break;
-    }
-}
-
 void MainWindow::toogleInput(bool b)
 {
     ui->lineEditReps->setEnabled(b);
     ui->lineEditSets->setEnabled(b);
     ui->lineEditWeight->setEnabled(b);
     ui->saveBtn->setEnabled(b);
-}
-
-void MainWindow::on_exerciseBox_activated(int index)
-{
-    qDebug() << index;
-    if (index != 0)
-       toogleInput(true);
-}
-
-void MainWindow::on_listWidgetMeasure_doubleClicked(const QModelIndex &index)
-{
-    bool ok;
-    int i = QInputDialog::getInt(this, tr("QInputDialog::getInteger()"),
-                                     tr("Value:"), 25, 0, 500, 1, &ok);
-    if (ok)
-        qDebug() << index.row() << i;
 }
 
 bool MainWindow::isComplete(int calculator)
@@ -243,20 +180,17 @@ bool MainWindow::isComplete(int calculator)
 
 void MainWindow::addSeries()
 {
-
     QLineSeries *series = new QLineSeries();
-    m_series.append(series);
+    exerciseSeries.append(series);
 
-    series->setName(exercise_lst.at(m_series.count() - 1));
+    series->setName(exerciseLst.at(exerciseSeries.count() - 1));
 
-    QDateTime momentInTime;
-    QString exercise = exercise_lst.at(m_series.count() - 1);
-    QList<Lift *> lst = db->getExerciseData(exercise);
+    QString exercise = exerciseLst.at(exerciseSeries.count() - 1);
+    QList<Lift *> lst = dbManager->getExerciseData(exercise);
     QList<QPointF> data;
     if (!lst.isEmpty()) {
         foreach (Lift *d, lst) {
-            momentInTime.setDate(QDateTime::fromString(d->getDate(),"ddMMyyyy").date());
-            data.append(QPointF(momentInTime.toMSecsSinceEpoch(), d->getWeight()));
+            data.append(QPointF(convertStrToDateTime(d->getDate()).toMSecsSinceEpoch(), d->getWeight()));
         }
     }
 
@@ -264,7 +198,7 @@ void MainWindow::addSeries()
     chart->addSeries(series);
 
     //Ignore all but first series
-    if (m_series.count() == 1) {
+    if (exerciseSeries.count() == 1) {
         //Add X axis as dates
         axisX = new QDateTimeAxis;
         axisX->setTickCount(10);
@@ -287,30 +221,22 @@ void MainWindow::addSeries()
 void MainWindow::removeSeries()
 {
     //Remove the last series from chart
-    if (m_series.count() > 0) {
-        QLineSeries *series = m_series.last();
+    if (exerciseSeries.count() > 0) {
+        QLineSeries *series = exerciseSeries.last();
         chart->removeSeries(series);
-        m_series.removeLast();
+        exerciseSeries.removeLast();
         delete series;
     }
 }
 
-
-void MainWindow::on_bmiBtn_clicked()
+void MainWindow::updateSeries(const QString &exercise, const QString &d, float w)
 {
-    float bmi_m, bmi_cm, bmi_kg, bmi_res;
-    QString str_res;
-
-    if (isComplete(fit.BMI)) {
-        ui->statusBar->clearMessage();
-        bmi_cm = ui->bmi_cm_in->text().toFloat();
-        bmi_kg = ui->bmi_kg_in->text().toFloat();
-        bmi_m = bmi_cm / 100;
-        bmi_res = fit.bmiCalc(bmi_m, bmi_kg);
-        str_res = QString::number(bmi_res);
-        ui->bmi_res_out->setText("Your BMI is: " + str_res);
+    foreach (QLineSeries *s, exerciseSeries) {
+       if ( exercise == s->name()) {
+           s->append(QPointF(convertStrToDateTime(d).toMSecsSinceEpoch(), w));
+           chartView->update();
+       }
     }
-
 }
 
 void MainWindow::setActivityLevel(float &cal_need, float bmr_res)
@@ -326,20 +252,74 @@ void MainWindow::setActivityLevel(float &cal_need, float bmr_res)
     }
 }
 
+void MainWindow::on_saveBtn_clicked()
+{
+    int reps, sets;
+    float weight;
+    QString date, exercise;
+
+    date = ui->calendarWidget->selectedDate().toString("ddMMyyyy");
+    exercise = ui->exerciseBox->currentText();
+    reps = ui->lineEditReps->text().toInt();
+    sets = ui->lineEditSets->text().toInt();
+    weight = ui->lineEditWeight->text().toFloat();
+
+    ui->statusBar->showMessage("Saving lift...",1000);
+    dbManager->addEntry(date, exercise, reps, sets, weight);
+    dbManager->printDatabase();
+    clearInput();
+    populateExerciseBox();
+    toogleInput(false);
+    updateSeries(exercise, date, weight);
+}
+
+void MainWindow::on_exerciseBox_activated(int index)
+{
+    qDebug() << index;
+    if (index != 0)
+       toogleInput(true);
+}
+
+void MainWindow::on_listWidgetMeasure_doubleClicked(const QModelIndex &index)
+{
+    bool ok;
+    int i = QInputDialog::getInt(this, tr("QInputDialog::getInteger()"),
+                                     tr("Value:"), 25, 0, 500, 1, &ok);
+    if (ok)
+        qDebug() << index.row() << i;
+}
+
+void MainWindow::on_bmiBtn_clicked()
+{
+    float bmi_m, bmi_cm, bmi_kg, bmi_res;
+    QString str_res;
+
+    if (isComplete(fitnessCalculator.BMI)) {
+        ui->statusBar->clearMessage();
+        bmi_cm = ui->bmi_cm_in->text().toFloat();
+        bmi_kg = ui->bmi_kg_in->text().toFloat();
+        bmi_m = bmi_cm / 100;
+        bmi_res = fitnessCalculator.bmiCalc(bmi_m, bmi_kg);
+        str_res = QString::number(bmi_res);
+        ui->bmi_res_out->setText("Your BMI is: " + str_res);
+    }
+
+}
+
 void MainWindow::on_bmrBtn_clicked()
 {
     float bmr_cm = 0, bmr_kg = 0, bmr_age = 0, bmr_res = 0, cal_need = 0;
     QString str_res, cal_res;
 
-    if (isComplete(fit.BMR)) {
+    if (isComplete(fitnessCalculator.BMR)) {
         ui->statusBar->clearMessage();
         bmr_cm = ui->bmr_cm_in->text().toFloat();
         bmr_kg = ui->bmr_kg_in->text().toFloat();
         bmr_age = !ui->bmr_age_in->text().isEmpty() ? ui->bmr_age_in->text().toFloat() : 30;
 
         bmr_res = ui->bmr_gender->currentIndex() == 1 ?
-                   fit.bmrCalc(bmr_cm, bmr_kg,bmr_age,1) :
-                    fit.bmrCalc(bmr_cm, bmr_kg,bmr_age);
+                   fitnessCalculator.bmrCalc(bmr_cm, bmr_kg,bmr_age,1) :
+                    fitnessCalculator.bmrCalc(bmr_cm, bmr_kg,bmr_age);
 
         setActivityLevel(cal_need, bmr_res);
         str_res = QString::number(bmr_res);
@@ -352,4 +332,32 @@ void MainWindow::on_cal_menu_lst_clicked(const QModelIndex &index)
 {
     qDebug() << index.row();
     ui->stackedWidget->setCurrentIndex(index.row());
+}
+
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+    //Check active tab
+    switch(ui->tabWidget->currentIndex()){
+    case 0:
+        if (event->key() == Qt::Key_Return)
+            on_saveBtn_clicked();
+        break;
+    case 1:
+        //Free slot
+        break;
+    case 2:
+        //Free slot
+        break;
+    case 3:
+        //Free slot
+    default:
+        break;
+    }
+}
+
+QDateTime MainWindow::convertStrToDateTime(const QString &dateStr)
+{
+    QDateTime momentInTime;
+    momentInTime.setDate(QDateTime::fromString(dateStr,"ddMMyyyy").date());
+    return momentInTime;
 }

@@ -43,11 +43,21 @@ private slots:
     void on_cal_menu_lst_clicked(const QModelIndex &index);
 
 private:
-
+    //Main ui
     Ui::MainWindow *ui;
-    FitnessCalculator fit;
-    QStringList exercise_lst;
+    //Fitness related
+    FitnessCalculator fitnessCalculator;
+    //Database related
+    DbManager *dbManager;
+    //Chart related
+    QStringList exerciseLst;
+    Chart *chart;
+    ChartView *chartView;
+    QDateTimeAxis *axisX;
+    QValueAxis *axisY;
+    QList<QLineSeries *> exerciseSeries;
 
+    //Flags
     enum EXERCISES {
         SQUAT,
         DEAD,
@@ -62,29 +72,16 @@ private:
         ENTER_KG = 2,
     };
 
-    enum GENDER {
-        MAN = 0,
-        WOMAN = 1,
-    };
+    enum GENDER { MAN = 0, WOMAN = 1 };
 
+    //Error handling
     QString error_codes[10] = {
         "Please enter lenght and weight",
         "Please enter lenght",
         "Please enter weight"
     };
 
-    DbManager *db;
-
-    QLineSeries *squatSeries, *deadSeries,
-    *benchSeries, *ohpSeries, *rowSeries,
-    *weightSeries;
-
-    Chart *chart;
-    ChartView *chartView;
-    QDateTimeAxis *axisX;
-    QValueAxis *axisY;
-    QList<QLineSeries *> m_series;
-
+    //Prototypes
     float bmi_calculate(float cm_len, float kg_am);
 
     float bmr_calculate(float cm_len, float kg_am, int age, int gender = 0);
@@ -114,6 +111,10 @@ private:
     void addSeries();
 
     void removeSeries();
+
+    void updateSeries(const QString &exercise, const QString &d, float w);
+
+    QDateTime convertStrToDateTime(const QString &dateStr);
 
 protected:
     virtual void keyPressEvent(QKeyEvent *event);
